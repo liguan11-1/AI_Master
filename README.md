@@ -325,7 +325,7 @@
       box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.2);
       border: 2px solid #000;
       object-fit: contain;
-      image-rendering: pixelated;
+      image-rendering: auto;
       cursor: default; /* 移除点击效果 */
     }
     
@@ -693,9 +693,14 @@
                   inner = JSON.parse(inner);
               }
               if (inner && inner.data) {
+                  // 确保完整提取URL，不修改任何参数
                   const urlMatch = inner.data.match(/https?:\/\/[^\s"']+/);
                   if (urlMatch) {
                       imgUrl = urlMatch[0];
+                      // 确保URL不被截断
+                      if (imgUrl.endsWith(',') || imgUrl.endsWith(';') || imgUrl.endsWith(')') || imgUrl.endsWith(']')) {
+                          imgUrl = imgUrl.slice(0, -1);
+                      }
                   }
               }
           } catch (e) {}
@@ -707,8 +712,8 @@
               
               document.getElementById('response').innerHTML = `
                   <div class="response-content">
-                      <img src="${imgUrl}" class="result-cocktail-image" alt="AI 调酒图片" ${isWx ? 'data-long-press-save="true"' : ''}>
-                      <a href="${imgUrl}" download="专属调酒.png" class="${downloadBtnClass}">${downloadBtnText}</a>
+                      <img src="${imgUrl}" class="result-cocktail-image" alt="AI 调酒图片" ${isWx ? 'data-long-press-save="true"' : ''} crossorigin="anonymous">
+                      <a href="${imgUrl}" download="专属调酒.png" class="${downloadBtnClass}" target="_blank">${downloadBtnText}</a>
                   </div>
               `;
               
