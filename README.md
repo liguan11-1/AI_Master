@@ -331,6 +331,9 @@
       cursor: pointer;
       transition: transform 0.2s ease, box-shadow 0.2s ease;
       position: relative;
+      -webkit-user-select: none; /* 禁止选择，优化长按体验 */
+      user-select: none;
+      -webkit-touch-callout: default; /* 允许长按菜单 */
     }
     
     .result-cocktail-image:hover {
@@ -339,21 +342,22 @@
     }
     
     .result-cocktail-image::after {
-      content: "点击查看大图";
+      content: "点击查看大图\\A长按可保存";
+      white-space: pre;
       position: absolute;
       bottom: 10px;
       right: 10px;
       background: rgba(0, 0, 0, 0.7);
       color: #00ffff;
-      font-size: 10px;
+      font-size: 12px;
       padding: 5px 8px;
-      border-radius: 0;
+      border-radius: 4px;
       border: 1px solid #00ffff;
       opacity: 0.8;
       pointer-events: none;
       font-family: 'Microsoft YaHei', sans-serif;
-      text-shadow: 1px 1px #ff00ff;
-      box-shadow: 0 0 5px rgba(0, 255, 255, 0.5);
+      text-align: center;
+      line-height: 1.4;
     }
     
     .download-button {
@@ -583,80 +587,8 @@
   </div>
   
   <script src="https://lf-cdn.coze.cn/obj/unpkg/flow-platform/chat-app-sdk/1.2.0-beta.10/libs/cn/index.js"></script>
-  <script src="https://res.wx.qq.com/open/js/jweixin-1.6.0.js"></script>
   <script>
-    // 检测是否在微信浏览器中
-    function isWechat() {
-      const ua = navigator.userAgent.toLowerCase();
-      return ua.indexOf('micromessenger') !== -1;
-    }
-    
-    // 显示图片模态框
-    function openModal(imgSrc) {
-      const modal = document.getElementById('imageModal');
-      const modalImg = document.getElementById('modalImage');
-      modalImg.src = imgSrc;
-      modal.style.display = 'flex';
-      
-      // 阻止页面滚动
-      document.body.style.overflow = 'hidden';
-    }
-    
-    // 关闭图片模态框
-    function closeModal() {
-      document.getElementById('imageModal').style.display = 'none';
-      // 恢复页面滚动
-      document.body.style.overflow = 'auto';
-    }
-    
-    // 添加键盘ESC键关闭模态框
-    document.addEventListener('keydown', function(event) {
-      if (event.key === 'Escape') {
-        closeModal();
-      }
-    });
-    
-    // 微信浏览器适配
-    function setupWechatCompat() {
-      if (isWechat()) {
-        // 添加微信浏览器特定的类名
-        document.body.classList.add('wechat');
-        
-        // 禁用微信内置的字体缩放
-        document.addEventListener('WeixinJSBridgeReady', function onBridgeReady() {
-          WeixinJSBridge.invoke('setFontSizeCallback', { 'fontSize': 0 });
-          WeixinJSBridge.on('menu:setfont', function() {
-            WeixinJSBridge.invoke('setFontSizeCallback', { 'fontSize': 0 });
-          });
-        });
-        
-        // 修复微信浏览器中的点击延迟
-        document.addEventListener('touchstart', function(){}, {passive: true});
-        
-        // 修复微信浏览器中的图片保存
-        document.querySelectorAll('.download-button').forEach(btn => {
-          btn.addEventListener('click', function(e) {
-            if (isWechat()) {
-              e.preventDefault();
-              const imgUrl = this.getAttribute('href');
-              // 显示提示，引导用户长按图片保存
-              alert('请长按图片，选择"保存图片"');
-              return false;
-            }
-          });
-        });
-        
-        // 禁用微信右上角菜单
-        if (typeof WeixinJSBridge !== 'undefined') {
-          WeixinJSBridge.call('hideOptionMenu');
-        }
-      }
-    }
-    
     document.addEventListener('DOMContentLoaded', function() {
-      // 检测并设置微信浏览器兼容
-      setupWechatCompat();
-      
       // 酒文化语录和网络热梗
       const wineQuotes = [
         "早 C 晚 A，不如早啤晚白",
@@ -758,6 +690,28 @@
       createBubbles();
     });
     
+    // 显示图片模态框
+    function openModal(imgSrc) {
+      const modal = document.getElementById('imageModal');
+      const modalImg = document.getElementById('modalImage');
+      modalImg.src = imgSrc;
+      modal.style.display = 'flex';
+      document.body.style.overflow = 'hidden';
+    }
+    
+    // 关闭图片模态框
+    function closeModal() {
+      document.getElementById('imageModal').style.display = 'none';
+      document.body.style.overflow = 'auto';
+    }
+    
+    // 添加键盘ESC键关闭模态框
+    document.addEventListener('keydown', function(event) {
+      if (event.key === 'Escape') {
+        closeModal();
+      }
+    });
+    
     async function callCozeAPI() {
       const input = document.getElementById('input').value;
       const loading = document.getElementById('loading');
@@ -803,11 +757,9 @@
                   inner = JSON.parse(inner);
               }
               if (inner && inner.data) {
-                  // 确保完整提取URL，不修改任何参数
                   const urlMatch = inner.data.match(/https?:\/\/[^\s"']+/);
                   if (urlMatch) {
                       imgUrl = urlMatch[0];
-                      // 确保URL不被截断
                       if (imgUrl.endsWith(',') || imgUrl.endsWith(';') || imgUrl.endsWith(')') || imgUrl.endsWith(']')) {
                           imgUrl = imgUrl.slice(0, -1);
                       }
@@ -816,29 +768,12 @@
           } catch (e) {}
           
           if (imgUrl) {
-              const isWx = isWechat();
-              const downloadBtnText = isWx ? '长按图片保存' : '下载图片';
-              const downloadBtnClass = isWx ? 'download-button wx-save-tip' : 'download-button';
-              
               document.getElementById('response').innerHTML = `
                   <div class="response-content">
-                      <img src="${imgUrl}" class="result-cocktail-image" alt="AI 调酒图片" ${isWx ? 'data-long-press-save="true"' : ''} crossorigin="anonymous" onclick="openModal('${imgUrl}')">
-                      <a href="${imgUrl}" download="专属调酒.png" class="${downloadBtnClass}" target="_blank">${downloadBtnText}</a>
+                      <img src="${imgUrl}" class="result-cocktail-image" alt="AI 调酒图片" onclick="openModal('${imgUrl}')">
+                      <a href="${imgUrl}" download="专属调酒.png" class="download-button" target="_blank">下载图片</a>
                   </div>
               `;
-              
-              // 在微信中重新绑定长按保存事件
-              if (isWx) {
-                setTimeout(() => {
-                  document.querySelectorAll('.wx-save-tip').forEach(btn => {
-                    btn.addEventListener('click', function(e) {
-                      e.preventDefault();
-                      alert('请长按图片，选择"保存图片"');
-                      return false;
-                    });
-                  });
-                }, 100);
-              }
           } else {
               document.getElementById('response').innerHTML = `<div class="response-content" style="color:#00ffff;">未获取到图片链接</div>`;
           }
