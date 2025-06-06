@@ -149,7 +149,7 @@
     .cocktail-image {
       width: 130px;
       height: 160px;
-      margin: 20px auto 40px;
+      margin: 20px auto 20px;
       background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23FFFFFF"><path d="M7.5,7L5.5,5H18.5L16.5,7M11,13V19H6V21H18V19H13V13L21,5V3H3V5L11,13Z"/></svg>');
       background-size: contain;
       background-repeat: no-repeat;
@@ -233,7 +233,8 @@
       box-shadow: 4px 4px 0 rgba(255, 0, 255, 0.2),
                   -4px -4px 0 rgba(0, 255, 255, 0.2);
       border: 2px solid #00ffff;
-      margin-bottom: 30px;
+      margin-bottom: 20px;
+      box-sizing: border-box;
     }
     
     textarea {
@@ -264,7 +265,7 @@
       box-shadow: 4px 4px 0 rgba(255, 0, 255, 0.5);
       text-shadow: 2px 2px #ff00ff;
       display: block;
-      margin: 0 auto 30px;
+      margin: 0 auto 20px;
       width: auto;
       min-width: 200px;
     }
@@ -315,6 +316,7 @@
       box-shadow: 4px 4px 0 rgba(255, 0, 255, 0.2),
                   -4px -4px 0 rgba(0, 255, 255, 0.2);
       border: 2px solid #00ffff;
+      box-sizing: border-box;
     }
     
     .result-cocktail-image {
@@ -327,11 +329,31 @@
       object-fit: contain;
       image-rendering: auto;
       cursor: pointer;
-      transition: transform 0.2s ease;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      position: relative;
     }
     
     .result-cocktail-image:hover {
       transform: scale(1.02);
+      box-shadow: 0 0 15px rgba(0, 255, 255, 0.5);
+    }
+    
+    .result-cocktail-image::after {
+      content: "点击查看大图";
+      position: absolute;
+      bottom: 10px;
+      right: 10px;
+      background: rgba(0, 0, 0, 0.7);
+      color: #00ffff;
+      font-size: 10px;
+      padding: 5px 8px;
+      border-radius: 0;
+      border: 1px solid #00ffff;
+      opacity: 0.8;
+      pointer-events: none;
+      font-family: 'Microsoft YaHei', sans-serif;
+      text-shadow: 1px 1px #ff00ff;
+      box-shadow: 0 0 5px rgba(0, 255, 255, 0.5);
     }
     
     .download-button {
@@ -479,6 +501,12 @@
       justify-content: center;
       align-items: center;
       overflow: auto;
+      animation: modal-fade-in 0.3s ease;
+    }
+    
+    @keyframes modal-fade-in {
+      from { opacity: 0; }
+      to { opacity: 1; }
     }
     
     .image-modal img {
@@ -486,7 +514,13 @@
       max-height: 90%;
       object-fit: contain;
       border: 2px solid #00ffff;
-      box-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
+      box-shadow: 0 0 20px rgba(0, 255, 255, 0.5), 0 0 40px rgba(255, 0, 255, 0.3);
+      animation: image-zoom-in 0.3s ease;
+    }
+    
+    @keyframes image-zoom-in {
+      from { transform: scale(0.9); opacity: 0.5; }
+      to { transform: scale(1); opacity: 1; }
     }
     
     .close-modal {
@@ -497,6 +531,13 @@
       font-size: 30px;
       cursor: pointer;
       text-shadow: 0 0 10px rgba(255, 0, 255, 0.8);
+      transition: transform 0.2s ease, text-shadow 0.2s ease;
+      z-index: 1001;
+    }
+    
+    .close-modal:hover {
+      transform: scale(1.1);
+      text-shadow: 0 0 15px rgba(255, 0, 255, 1), 0 0 20px rgba(0, 255, 255, 1);
     }
   </style>
 </head>
