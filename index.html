@@ -2,7 +2,13 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="format-detection" content="telephone=no">
+  <meta name="wechat-enable-text-zoom-em" content="true">
+  <meta name="x5-fullscreen" content="true">
+  <meta name="x5-page-mode" content="app">
   <meta name="github-pages-no-banner" content="true">
   <title>AI调酒师</title>
   <style>
@@ -42,26 +48,35 @@
       opacity: 0;
       z-index: 10;
       letter-spacing: 1px;
-      top: 5%;
-      image-rendering: pixelated;
+      left: 0;
+      pointer-events: none;
+    }
+    
+    .floating-text.line-1 {
+      top: 25%;
+    }
+    
+    .floating-text.line-2 {
+      top: 50%;
+    }
+    
+    .floating-text.line-3 {
+      top: 75%;
     }
     
     @keyframes float {
       0% {
-        transform: translateY(0) translateX(0);
+        transform: translateX(-100%);
         opacity: 0;
       }
-      5% {
+      10% {
         opacity: 1;
       }
-      25% {
+      90% {
         opacity: 1;
-      }
-      30% {
-        opacity: 0;
       }
       100% {
-        transform: translateY(50px) translateX(100px);
+        transform: translateX(100%);
         opacity: 0;
       }
     }
@@ -83,7 +98,7 @@
     
     .app-header {
       text-align: center;
-      padding: 15px 0;
+      padding: 30px 0 15px;
       margin-bottom: 10px;
     }
     
@@ -369,6 +384,43 @@
       }
     }
     
+    /* 微信浏览器特定样式 */
+    .wx-save-tip {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .wx-save-tip::before {
+      content: "";
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      margin-right: 8px;
+      background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23FFFFFF"><path d="M12,2C6.477,2,2,6.477,2,12c0,5.523,4.477,10,10,10s10-4.477,10-10C22,6.477,17.523,2,12,2z M12,17.5c-0.828,0-1.5-0.672-1.5-1.5s0.672-1.5,1.5-1.5s1.5,0.672,1.5,1.5S12.828,17.5,12,17.5z M13,12h-2V7h2V12z"/></svg>');
+      background-size: contain;
+      background-repeat: no-repeat;
+    }
+    
+    /* 修复微信浏览器中的滚动问题 */
+    body.wechat {
+      -webkit-overflow-scrolling: touch;
+    }
+    
+    body.wechat .mobile-container {
+      -webkit-overflow-scrolling: touch;
+    }
+    
+    body.wechat #main-content {
+      -webkit-overflow-scrolling: touch;
+    }
+    
+    /* 修复微信中的字体显示 */
+    body.wechat * {
+      -webkit-text-size-adjust: 100% !important;
+    }
+    
     #main-content {
       width: 100%;
       display: flex;
@@ -432,8 +484,55 @@
   </div>
   
   <script src="https://lf-cdn.coze.cn/obj/unpkg/flow-platform/chat-app-sdk/1.2.0-beta.10/libs/cn/index.js"></script>
+  <script src="https://res.wx.qq.com/open/js/jweixin-1.6.0.js"></script>
   <script>
+    // 检测是否在微信浏览器中
+    function isWechat() {
+      const ua = navigator.userAgent.toLowerCase();
+      return ua.indexOf('micromessenger') !== -1;
+    }
+    
+    // 微信浏览器适配
+    function setupWechatCompat() {
+      if (isWechat()) {
+        // 添加微信浏览器特定的类名
+        document.body.classList.add('wechat');
+        
+        // 禁用微信内置的字体缩放
+        document.addEventListener('WeixinJSBridgeReady', function onBridgeReady() {
+          WeixinJSBridge.invoke('setFontSizeCallback', { 'fontSize': 0 });
+          WeixinJSBridge.on('menu:setfont', function() {
+            WeixinJSBridge.invoke('setFontSizeCallback', { 'fontSize': 0 });
+          });
+        });
+        
+        // 修复微信浏览器中的点击延迟
+        document.addEventListener('touchstart', function(){}, {passive: true});
+        
+        // 修复微信浏览器中的图片保存
+        document.querySelectorAll('.download-button').forEach(btn => {
+          btn.addEventListener('click', function(e) {
+            if (isWechat()) {
+              e.preventDefault();
+              const imgUrl = this.getAttribute('href');
+              // 显示提示，引导用户长按图片保存
+              alert('请长按图片，选择"保存图片"');
+              return false;
+            }
+          });
+        });
+        
+        // 禁用微信右上角菜单
+        if (typeof WeixinJSBridge !== 'undefined') {
+          WeixinJSBridge.call('hideOptionMenu');
+        }
+      }
+    }
+    
     document.addEventListener('DOMContentLoaded', function() {
+      // 检测并设置微信浏览器兼容
+      setupWechatCompat();
+      
       // 酒文化语录和网络热梗
       const wineQuotes = [
         "早 C 晚 A，不如早啤晚白",
@@ -459,16 +558,18 @@
       ];
       
       // 创建飘屏文字
+      let currentLine = 1;
+      const lineDelay = 2000; // 每行文字之间的延迟时间
+      
       function createFloatingText() {
         const text = document.createElement('div');
-        text.className = 'floating-text';
+        text.className = `floating-text line-${currentLine}`;
         text.textContent = wineQuotes[Math.floor(Math.random() * wineQuotes.length)];
         
         // 随机位置和动画时间
         const startX = Math.random() * window.innerWidth;
-        
         text.style.left = `${startX}px`;
-        text.style.animationDuration = `8s`; // 缩短动画时间以适应3秒显示
+        text.style.animationDuration = `8s`;
         
         // 随机颜色
         const hue = Math.floor(Math.random() * 360);
@@ -487,6 +588,17 @@
         setTimeout(() => {
           document.body.removeChild(text);
         }, 8000);
+
+        // 更新行号
+        currentLine = currentLine >= 3 ? 1 : currentLine + 1;
+      }
+      
+      // 每隔一段时间创建新的飘屏文字
+      setInterval(createFloatingText, lineDelay);
+      
+      // 初始创建几个飘屏文字，确保每行都有一个
+      for (let i = 0; i < 3; i++) {
+        setTimeout(createFloatingText, i * (lineDelay / 3));
       }
       
       // 创建气泡效果
@@ -516,14 +628,6 @@
           
           bubblesContainer.appendChild(bubble);
         }
-      }
-      
-      // 每隔一段时间创建新的飘屏文字
-      setInterval(createFloatingText, 2000); // 调整间隔以适应3秒显示
-      
-      // 初始创建几个飘屏文字
-      for (let i = 0; i < 5; i++) {
-        setTimeout(createFloatingText, i * 1000);
       }
       
       // 创建气泡效果
@@ -583,14 +687,31 @@
           } catch (e) {}
           
           if (imgUrl) {
+              const isWx = isWechat();
+              const downloadBtnText = isWx ? '长按图片保存' : '下载图片';
+              const downloadBtnClass = isWx ? 'download-button wx-save-tip' : 'download-button';
+              
               document.getElementById('response').innerHTML = `
                   <div class="response-content">
-                      <img src="${imgUrl}" class="result-cocktail-image" alt="AI 调酒图片">
-                      <a href="${imgUrl}" download="专属调酒.png" class="download-button">下载图片</a>
+                      <img src="${imgUrl}" class="result-cocktail-image" alt="AI 调酒图片" ${isWx ? 'data-long-press-save="true"' : ''}>
+                      <a href="${imgUrl}" download="专属调酒.png" class="${downloadBtnClass}">${downloadBtnText}</a>
                   </div>
               `;
+              
+              // 在微信中重新绑定长按保存事件
+              if (isWx) {
+                setTimeout(() => {
+                  document.querySelectorAll('.wx-save-tip').forEach(btn => {
+                    btn.addEventListener('click', function(e) {
+                      e.preventDefault();
+                      alert('请长按图片，选择"保存图片"');
+                      return false;
+                    });
+                  });
+                }, 100);
+              }
           } else {
-              document.getElementById('response').innerHTML = `<div class="response-content" style="color:#333;">未获取到图片链接</div>`;
+              document.getElementById('response').innerHTML = `<div class="response-content" style="color:#00ffff;">未获取到图片链接</div>`;
           }
       } catch (error) {
           document.getElementById('response').innerHTML = `<div class="response-content" style="color:#00ffff;">错误: ${error.message}</div>`;
