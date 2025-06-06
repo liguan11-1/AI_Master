@@ -21,7 +21,7 @@
       margin: 0;
       padding: 0;
       font-family: 'Press Start 2P', 'Microsoft YaHei', 'PingFang SC', sans-serif;
-      background-color: #121212;
+      background-color: #0a0a1f;
       overflow: hidden;
       position: relative;
       height: 100vh;
@@ -67,15 +67,16 @@
     }
     
     .mobile-container {
-      width: 390px; /* iPhone 12/13/14 的宽度 */
-      height: 844px; /* iPhone 12/13/14 的高度 */
+      width: 100%;
+      height: 100%;
+      max-width: 390px;
+      max-height: 844px;
       margin: 0 auto;
-      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
-      box-shadow: 0 0 30px rgba(52, 152, 219, 0.5);
+      background: linear-gradient(135deg, #0f0f2d 0%, #1a1a4f 50%, #2d1a4f 100%);
+      box-shadow: 0 0 30px rgba(81, 255, 246, 0.3);
       position: relative;
       z-index: 5;
       overflow: hidden;
-      border: 2px solid #000; /* 添加边框突出显示手机轮廓 */
       display: flex;
       flex-direction: column;
     }
@@ -87,43 +88,56 @@
     }
     
     .app-title {
-      background-color: #2196F3;
-      color: white;
-      font-size: 1.5rem;
+      background: linear-gradient(90deg, #ff00ff 0%, #00ffff 100%);
+      color: #ffffff;
+      font-size: 2rem;
       font-weight: normal;
-      padding: 8px 25px;
-      border-radius: 0;
+      padding: 12px 30px;
+      border: 2px solid #00ffff;
       display: inline-block;
-      box-shadow: 4px 4px 0 rgba(33, 150, 243, 0.5);
-      margin-bottom: 10px;
+      box-shadow: 4px 4px 0 rgba(255, 0, 255, 0.5),
+                  -4px -4px 0 rgba(0, 255, 255, 0.5);
+      margin-bottom: 15px;
       font-family: 'Press Start 2P', monospace;
       text-transform: uppercase;
-      image-rendering: pixelated;
+      position: relative;
+      text-shadow: 2px 2px #ff00ff, -2px -2px #00ffff;
+      animation: glitch 5s infinite;
+    }
+    
+    @keyframes glitch {
+      0%, 100% { transform: none; }
+      20% { transform: skewX(-15deg); }
+      40% { transform: skewX(15deg); }
+      60% { transform: skewX(-10deg); }
+      80% { transform: skewX(10deg); }
     }
     
     .app-subtitle {
       display: flex;
       justify-content: center;
       margin-top: 10px;
+      flex-wrap: wrap; /* 允许换行 */
     }
     
     .subtitle-pill {
-      background-color: #2196F3;
+      background: linear-gradient(45deg, #ff00ff 0%, #00ffff 100%);
       color: white;
       font-size: 0.8rem;
       font-weight: normal;
-      padding: 5px 15px;
-      border-radius: 0;
-      margin: 0 5px;
-      box-shadow: 2px 2px 0 rgba(33, 150, 243, 0.4);
+      padding: 6px 12px;
+      margin: 3px;
+      box-shadow: 2px 2px 0 rgba(255, 0, 255, 0.4),
+                  -2px -2px 0 rgba(0, 255, 255, 0.4);
       font-family: 'Press Start 2P', monospace;
-      image-rendering: pixelated;
+      border: 1px solid #00ffff;
+      text-shadow: 1px 1px #ff00ff;
     }
     
     .cocktail-image {
-      width: 156px;
-      height: 195px;
-      margin: 20px auto;
+      width: 130px;
+      height: 160px;
+      margin: 20px auto 40px;
       background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23FFFFFF"><path d="M7.5,7L5.5,5H18.5L16.5,7M11,13V19H6V21H18V19H13V13L21,5V3H3V5L11,13Z"/></svg>');
       background-size: contain;
       background-repeat: no-repeat;
@@ -135,7 +149,10 @@
     .cocktail-glass {
       width: 100%;
       height: 100%;
-      background: linear-gradient(to bottom, #4CAF50 0%, #FF9800 30%, #F44336 100%);
+      background: linear-gradient(to bottom, 
+        rgba(0, 255, 255, 0.8) 0%, 
+        rgba(255, 0, 255, 0.8) 50%, 
+        rgba(255, 255, 0, 0.8) 100%);
       -webkit-mask-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M7.5,7L5.5,5H18.5L16.5,7M11,13V19H6V21H18V19H13V13L21,5V3H3V5L11,13Z"/></svg>');
       mask-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M7.5,7L5.5,5H18.5L16.5,7M11,13V19H6V21H18V19H13V13L21,5V3H3V5L11,13Z"/></svg>');
       -webkit-mask-size: contain;
@@ -148,15 +165,15 @@
     }
     
     .lime-slice {
-      width: 39px;
-      height: 39px;
-      background-color: #8BC34A;
+      width: 32px;
+      height: 32px;
+      background-color: #00ff00;
       border-radius: 50%;
       position: absolute;
       top: 13px;
       right: 33px;
       transform: rotate(-20deg);
-      box-shadow: 0 0 5px rgba(139, 195, 74, 0.7);
+      box-shadow: 0 0 10px rgba(0, 255, 0, 0.7);
       image-rendering: pixelated;
     }
     
@@ -200,87 +217,93 @@
     .input-container {
       width: 85%;
       margin: 0 auto;
-      background-color: rgba(255, 255, 255, 0.9);
-      border-radius: 0;
+      background-color: rgba(15, 15, 45, 0.9);
       padding: 10px;
-      box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.2);
-      border: 2px solid #000;
-      image-rendering: pixelated;
+      box-shadow: 4px 4px 0 rgba(255, 0, 255, 0.2),
+                  -4px -4px 0 rgba(0, 255, 255, 0.2);
+      border: 2px solid #00ffff;
+      margin-bottom: 30px;
     }
     
     textarea {
       width: 100%;
-      height: 65px;
+      height: 60px;
       padding: 8px;
-      border: 2px solid #000;
-      border-radius: 0;
-      resize: none;
-      font-size: 14px;
+      border: 1px solid #00ffff;
+      color: #ffffff;
+      font-size: 12px;
       background: transparent;
       font-family: 'Press Start 2P', monospace;
-      image-rendering: pixelated;
     }
     
-    textarea:focus {
-      outline: none;
+    textarea::placeholder {
+      color: rgba(0, 255, 255, 0.5);
     }
     
     .action-button {
-      background: #00BFA5;
+      background: linear-gradient(45deg, #ff00ff, #00ffff);
       color: white;
       padding: 12px 30px;
-      border: 2px solid #008975;
-      border-radius: 0;
+      border: 2px solid #00ffff;
       cursor: pointer;
       font-size: 16px;
       font-weight: normal;
       font-family: 'Press Start 2P', monospace;
-      transition: all 0.2s ease;
+      transition: all 0.3s ease;
+      box-shadow: 4px 4px 0 rgba(255, 0, 255, 0.5);
+      text-shadow: 2px 2px #ff00ff;
       display: block;
-      margin: 20px auto;
-      box-shadow: 4px 4px 0 #008975;
-      image-rendering: pixelated;
+      margin: 0 auto 30px;
+      width: auto;
+      min-width: 200px;
     }
     
     .action-button:hover {
       transform: translate(2px, 2px);
-      box-shadow: 2px 2px 0 #008975;
+      box-shadow: 2px 2px 0 rgba(255, 0, 255, 0.5);
     }
     
     .loading {
       display: none;
       text-align: center;
       margin: 15px 0;
+      opacity: 0.8;
     }
     
     .loading-spinner {
       width: 40px;
       height: 40px;
-      border: 4px solid rgba(255, 255, 255, 0.3);
-      border-top: 4px solid #00BFA5;
+      border: 3px solid rgba(0, 255, 255, 0.3);
+      border-top: 3px solid #ff00ff;
+      border-right: 3px solid #00ffff;
       border-radius: 0;
-      animation: spin 1s steps(8) infinite;
+      animation: cyberspin 1s steps(8) infinite;
       margin: 10px auto;
-      image-rendering: pixelated;
     }
     
-    @keyframes spin {
+    @keyframes cyberspin {
       0% { transform: rotate(0deg); }
       100% { transform: rotate(360deg); }
     }
     
+    .loading p {
+      color: #00ffff;
+      font-size: 0.8rem;
+      opacity: 0.8;
+      text-shadow: 1px 1px #ff00ff;
+    }
+    
     .response-content {
-      background: rgba(255, 255, 255, 0.9);
-      padding: 10px;
-      border-radius: 0;
+      background: rgba(15, 15, 45, 0.9);
+      padding: 15px;
       margin: 15px auto;
       width: 85%;
       display: flex;
       flex-direction: column;
       align-items: center;
-      box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.2);
-      border: 2px solid #000;
-      image-rendering: pixelated;
+      box-shadow: 4px 4px 0 rgba(255, 0, 255, 0.2),
+                  -4px -4px 0 rgba(0, 255, 255, 0.2);
+      border: 2px solid #00ffff;
     }
     
     .result-cocktail-image {
@@ -292,35 +315,50 @@
       border: 2px solid #000;
       object-fit: contain;
       image-rendering: pixelated;
+      cursor: default; /* 移除点击效果 */
     }
     
     .download-button {
-      display: inline-block;
-      padding: 8px 25px;
-      background: #00BFA5;
-      color: #fff;
-      border: 2px solid #008975;
-      border-radius: 0;
+      background: linear-gradient(45deg, #ff00ff, #00ffff);
+      color: white;
+      padding: 12px 25px;
+      border: 2px solid #00ffff;
       text-decoration: none;
       font-weight: normal;
       font-family: 'Press Start 2P', monospace;
       transition: all 0.2s ease;
-      margin-top: 8px;
-      box-shadow: 4px 4px 0 #008975;
-      font-size: 12px;
-      image-rendering: pixelated;
+      margin-top: 12px;
+      box-shadow: 4px 4px 0 rgba(255, 0, 255, 0.5);
+      font-size: 14px;
+      width: 80%;
+      text-align: center;
+      text-shadow: 2px 2px #ff00ff;
     }
     
     .download-button:hover {
       transform: translate(2px, 2px);
-      box-shadow: 2px 2px 0 #008975;
+      box-shadow: 2px 2px 0 rgba(255, 0, 255, 0.5);
     }
     
     @media (max-width: 390px) {
-      .mobile-container {
-        width: 100%;
-        height: 100vh;
-        border: none;
+      .app-title {
+        font-size: 1rem;
+        padding: 6px 15px;
+      }
+      
+      .subtitle-pill {
+        font-size: 0.6rem;
+        padding: 4px 8px;
+      }
+      
+      .cocktail-image {
+        width: 130px;
+        height: 160px;
+      }
+      
+      .lime-slice {
+        width: 32px;
+        height: 32px;
       }
     }
     
@@ -336,100 +374,30 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      margin-top: 10px;
+      margin-top: 20px;
+      padding: 20px 0;
+      flex: 1;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
     }
     
-    /* 添加图片查看器样式 */
-    .image-viewer-overlay {
-      display: none;
-      position: fixed;
+    /* 添加背景动画效果 */
+    .cyberpunk-bg {
+      position: absolute;
       top: 0;
       left: 0;
       width: 100%;
       height: 100%;
-      background-color: rgba(0, 0, 0, 0.9);
-      z-index: 1000;
-      cursor: pointer;
-    }
-
-    .image-viewer-container {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      max-width: 90%;
-      max-height: 90vh;
-    }
-
-    .image-viewer-img {
-      max-width: 100%;
-      max-height: 90vh;
-      object-fit: contain;
-      border: 2px solid #fff;
-      box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
-    }
-
-    .image-actions {
-      display: flex;
-      justify-content: center;
-      gap: 10px;
-      margin-top: 10px;
-    }
-
-    .image-action-button {
-      background: #00BFA5;
-      color: white;
-      padding: 8px 15px;
-      border: 2px solid #008975;
-      border-radius: 0;
-      cursor: pointer;
-      font-size: 14px;
-      font-family: 'Press Start 2P', monospace;
-      transition: all 0.2s ease;
-      box-shadow: 4px 4px 0 #008975;
-      image-rendering: pixelated;
-      text-decoration: none;
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
-    }
-
-    .image-action-button:hover {
-      transform: translate(2px, 2px);
-      box-shadow: 2px 2px 0 #008975;
-    }
-
-    .image-action-button img {
-      width: 16px;
-      height: 16px;
-      margin-right: 5px;
-    }
-
-    .close-viewer {
-      position: absolute;
-      top: 20px;
-      right: 20px;
-      color: white;
-      font-size: 24px;
-      cursor: pointer;
-      z-index: 1001;
-      width: 40px;
-      height: 40px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: #00BFA5;
-      border: 2px solid #008975;
-      box-shadow: 4px 4px 0 #008975;
-    }
-
-    .close-viewer:hover {
-      transform: translate(2px, 2px);
-      box-shadow: 2px 2px 0 #008975;
+      background: linear-gradient(45deg, 
+        rgba(255, 0, 255, 0.1) 0%, 
+        rgba(0, 255, 255, 0.1) 100%);
+      pointer-events: none;
+      z-index: -1;
     }
   </style>
 </head>
 <body>
+  <div class="cyberpunk-bg"></div>
   <div class="mobile-container">
     <div class="app-header">
       <div class="app-title">AI调酒师</div>
@@ -461,14 +429,6 @@
     </div>
     
     <div class="bubbles" id="bubbles"></div>
-  </div>
-  
-  <!-- 添加图片查看器 -->
-  <div class="image-viewer-overlay" id="imageViewer">
-    <div class="close-viewer" onclick="closeImageViewer()">×</div>
-    <div class="image-viewer-container">
-      <img class="image-viewer-img" id="viewerImage" src="" alt="鸡尾酒图片">
-    </div>
   </div>
   
   <script src="https://lf-cdn.coze.cn/obj/unpkg/flow-platform/chat-app-sdk/1.2.0-beta.10/libs/cn/index.js"></script>
@@ -582,6 +542,14 @@
 
       loading.style.display = 'block';
       response.innerHTML = '';
+      
+      // 添加延迟提示
+      const loadingText = document.querySelector('.loading p');
+      setTimeout(() => {
+        if (loading.style.display === 'block') {
+          loadingText.innerHTML = '正在为您调制专属定制噢！<br><span style="font-size: 0.6rem; opacity: 0.6;">个性化调配需要一点时间，请稍候...</span>';
+        }
+      }, 3000);
 
       try {
           const apiResponse = await fetch('https://api.coze.cn/v1/workflow/run', {
@@ -617,57 +585,19 @@
           if (imgUrl) {
               document.getElementById('response').innerHTML = `
                   <div class="response-content">
-                      <img src="${imgUrl}" class="result-cocktail-image" alt="AI 调酒图片" onclick="openImageViewer('${imgUrl}')">
-                      <div class="image-actions">
-                          <button class="image-action-button" onclick="openImageViewer('${imgUrl}')">
-                              <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0id2hpdGUiPjxwYXRoIGQ9Ik0xNSAzbDIuMyAyLjNMMTMuNiA5aDIuOGwtNiA2LTYtNmgyLjhsLTMuNy0zLjdMMTUgM3oiLz48L3N2Zz4=" alt="查看">
-                              查看大图
-                          </button>
-                          <a href="${imgUrl}" download="专属调酒.png" class="image-action-button">
-                              <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0id2hpdGUiPjxwYXRoIGQ9Ik0xOSA5aC00VjNIOXY2SDVMOSC5bDYgNiA2LTZ6TTUgMTh2MmgxNHYtMkg1eiIvPjwvc3ZnPg==" alt="下载">
-                              下载图片
-                          </a>
-                      </div>
+                      <img src="${imgUrl}" class="result-cocktail-image" alt="AI 调酒图片">
+                      <a href="${imgUrl}" download="专属调酒.png" class="download-button">下载图片</a>
                   </div>
               `;
           } else {
               document.getElementById('response').innerHTML = `<div class="response-content" style="color:#333;">未获取到图片链接</div>`;
           }
       } catch (error) {
-          document.getElementById('response').innerHTML = `<div class="response-content" style="color:#333;">错误: ${error.message}</div>`;
+          document.getElementById('response').innerHTML = `<div class="response-content" style="color:#00ffff;">错误: ${error.message}</div>`;
       } finally {
           loading.style.display = 'none';
       }
     }
-
-    // 添加图片查看器功能
-    function openImageViewer(imgUrl) {
-      const viewer = document.getElementById('imageViewer');
-      const viewerImage = document.getElementById('viewerImage');
-      viewerImage.src = imgUrl;
-      viewer.style.display = 'block';
-      document.body.style.overflow = 'hidden';
-    }
-
-    function closeImageViewer() {
-      const viewer = document.getElementById('imageViewer');
-      viewer.style.display = 'none';
-      document.body.style.overflow = '';
-    }
-
-    // 点击遮罩层关闭图片查看器
-    document.getElementById('imageViewer').addEventListener('click', function(e) {
-      if (e.target === this) {
-        closeImageViewer();
-      }
-    });
-
-    // 添加键盘事件支持
-    document.addEventListener('keydown', function(e) {
-      if (e.key === 'Escape') {
-        closeImageViewer();
-      }
-    });
   </script>
 </body>
 </html> 
