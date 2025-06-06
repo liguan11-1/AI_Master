@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html>
 <head>
   <meta charset="UTF-8">
@@ -13,6 +14,9 @@
       overflow: hidden;
       position: relative;
       height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
     }
     
     .floating-text {
@@ -52,15 +56,15 @@
     }
     
     .mobile-container {
-      max-width: 480px;
+      width: 390px; /* iPhone 12/13/14 的宽度 */
+      height: 844px; /* iPhone 12/13/14 的高度 */
       margin: 0 auto;
       background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
-      height: 100vh;
       box-shadow: 0 0 30px rgba(52, 152, 219, 0.5);
       position: relative;
       z-index: 5;
       overflow: hidden;
-      border-radius: 0;
+      border: 2px solid #000; /* 添加边框突出显示手机轮廓 */
       display: flex;
       flex-direction: column;
     }
@@ -301,13 +305,18 @@
       box-shadow: 2px 2px 0 #008975;
     }
     
-    @media (max-width: 480px) {
+    @media (max-width: 390px) {
       .mobile-container {
         width: 100%;
+        height: 100vh;
+        border: none;
       }
-      
-      .floating-text {
-        font-size: 1.2rem;
+    }
+    
+    @media (max-height: 844px) {
+      .mobile-container {
+        height: 100vh;
+        border: none;
       }
     }
     
@@ -317,6 +326,95 @@
       flex-direction: column;
       align-items: center;
       margin-top: 10px;
+    }
+    
+    /* 添加图片查看器样式 */
+    .image-viewer-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.9);
+      z-index: 1000;
+      cursor: pointer;
+    }
+
+    .image-viewer-container {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      max-width: 90%;
+      max-height: 90vh;
+    }
+
+    .image-viewer-img {
+      max-width: 100%;
+      max-height: 90vh;
+      object-fit: contain;
+      border: 2px solid #fff;
+      box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+    }
+
+    .image-actions {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .image-action-button {
+      background: #00BFA5;
+      color: white;
+      padding: 8px 15px;
+      border: 2px solid #008975;
+      border-radius: 0;
+      cursor: pointer;
+      font-size: 14px;
+      font-family: 'Press Start 2P', monospace;
+      transition: all 0.2s ease;
+      box-shadow: 4px 4px 0 #008975;
+      image-rendering: pixelated;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .image-action-button:hover {
+      transform: translate(2px, 2px);
+      box-shadow: 2px 2px 0 #008975;
+    }
+
+    .image-action-button img {
+      width: 16px;
+      height: 16px;
+      margin-right: 5px;
+    }
+
+    .close-viewer {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      color: white;
+      font-size: 24px;
+      cursor: pointer;
+      z-index: 1001;
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #00BFA5;
+      border: 2px solid #008975;
+      box-shadow: 4px 4px 0 #008975;
+    }
+
+    .close-viewer:hover {
+      transform: translate(2px, 2px);
+      box-shadow: 2px 2px 0 #008975;
     }
   </style>
 </head>
@@ -352,6 +450,14 @@
     </div>
     
     <div class="bubbles" id="bubbles"></div>
+  </div>
+  
+  <!-- 添加图片查看器 -->
+  <div class="image-viewer-overlay" id="imageViewer">
+    <div class="close-viewer" onclick="closeImageViewer()">×</div>
+    <div class="image-viewer-container">
+      <img class="image-viewer-img" id="viewerImage" src="" alt="鸡尾酒图片">
+    </div>
   </div>
   
   <script src="https://lf-cdn.coze.cn/obj/unpkg/flow-platform/chat-app-sdk/1.2.0-beta.10/libs/cn/index.js"></script>
@@ -483,17 +589,13 @@
 
           const data = await apiResponse.json();
           
-          // 只处理data字段，提取图片URL
           let imgUrl = null;
           try {
-              // data.data 可能是字符串，需要解析
               let inner = data.data;
               if (typeof inner === 'string') {
                   inner = JSON.parse(inner);
               }
-              // 尝试从 inner.data 中提取图片URL
               if (inner && inner.data) {
-                  // 匹配URL
                   const urlMatch = inner.data.match(/https?:\/\/[^\s"']+/);
                   if (urlMatch) {
                       imgUrl = urlMatch[0];
@@ -502,11 +604,19 @@
           } catch (e) {}
           
           if (imgUrl) {
-              // 只展示图片和下载按钮
               document.getElementById('response').innerHTML = `
                   <div class="response-content">
-                      <img src="${imgUrl}" class="result-cocktail-image" alt="AI 调酒图片">
-                      <a href="${imgUrl}" download="专属调酒.png" class="download-button">下载图片</a>
+                      <img src="${imgUrl}" class="result-cocktail-image" alt="AI 调酒图片" onclick="openImageViewer('${imgUrl}')">
+                      <div class="image-actions">
+                          <button class="image-action-button" onclick="openImageViewer('${imgUrl}')">
+                              <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0id2hpdGUiPjxwYXRoIGQ9Ik0xNSAzbDIuMyAyLjNMMTMuNiA5aDIuOGwtNiA2LTYtNmgyLjhsLTMuNy0zLjdMMTUgM3oiLz48L3N2Zz4=" alt="查看">
+                              查看大图
+                          </button>
+                          <a href="${imgUrl}" download="专属调酒.png" class="image-action-button">
+                              <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0id2hpdGUiPjxwYXRoIGQ9Ik0xOSA5aC00VjNIOXY2SDVMOSC5bDYgNiA2LTZ6TTUgMTh2MmgxNHYtMkg1eiIvPjwvc3ZnPg==" alt="下载">
+                              下载图片
+                          </a>
+                      </div>
                   </div>
               `;
           } else {
@@ -518,6 +628,35 @@
           loading.style.display = 'none';
       }
     }
+
+    // 添加图片查看器功能
+    function openImageViewer(imgUrl) {
+      const viewer = document.getElementById('imageViewer');
+      const viewerImage = document.getElementById('viewerImage');
+      viewerImage.src = imgUrl;
+      viewer.style.display = 'block';
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeImageViewer() {
+      const viewer = document.getElementById('imageViewer');
+      viewer.style.display = 'none';
+      document.body.style.overflow = '';
+    }
+
+    // 点击遮罩层关闭图片查看器
+    document.getElementById('imageViewer').addEventListener('click', function(e) {
+      if (e.target === this) {
+        closeImageViewer();
+      }
+    });
+
+    // 添加键盘事件支持
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') {
+        closeImageViewer();
+      }
+    });
   </script>
 </body>
 </html> 
