@@ -326,7 +326,12 @@
       border: 2px solid #000;
       object-fit: contain;
       image-rendering: auto;
-      cursor: default; /* 移除点击效果 */
+      cursor: pointer;
+      transition: transform 0.2s ease;
+    }
+    
+    .result-cocktail-image:hover {
+      transform: scale(1.02);
     }
     
     .download-button {
@@ -460,6 +465,39 @@
     #main-content {
       overflow: visible;
     }
+    
+    /* 添加大图查看的样式 */
+    .image-modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.9);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+      overflow: auto;
+    }
+    
+    .image-modal img {
+      max-width: 90%;
+      max-height: 90%;
+      object-fit: contain;
+      border: 2px solid #00ffff;
+      box-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
+    }
+    
+    .close-modal {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      color: #00ffff;
+      font-size: 30px;
+      cursor: pointer;
+      text-shadow: 0 0 10px rgba(255, 0, 255, 0.8);
+    }
   </style>
 </head>
 <body>
@@ -497,6 +535,12 @@
     <div class="bubbles" id="bubbles"></div>
   </div>
   
+  <!-- 添加图片查看模态框 -->
+  <div class="image-modal" id="imageModal" onclick="if(event.target === this) closeModal()">
+    <span class="close-modal" onclick="closeModal()">&times;</span>
+    <img id="modalImage" src="" alt="鸡尾酒大图">
+  </div>
+  
   <script src="https://lf-cdn.coze.cn/obj/unpkg/flow-platform/chat-app-sdk/1.2.0-beta.10/libs/cn/index.js"></script>
   <script src="https://res.wx.qq.com/open/js/jweixin-1.6.0.js"></script>
   <script>
@@ -505,6 +549,31 @@
       const ua = navigator.userAgent.toLowerCase();
       return ua.indexOf('micromessenger') !== -1;
     }
+    
+    // 显示图片模态框
+    function openModal(imgSrc) {
+      const modal = document.getElementById('imageModal');
+      const modalImg = document.getElementById('modalImage');
+      modalImg.src = imgSrc;
+      modal.style.display = 'flex';
+      
+      // 阻止页面滚动
+      document.body.style.overflow = 'hidden';
+    }
+    
+    // 关闭图片模态框
+    function closeModal() {
+      document.getElementById('imageModal').style.display = 'none';
+      // 恢复页面滚动
+      document.body.style.overflow = 'auto';
+    }
+    
+    // 添加键盘ESC键关闭模态框
+    document.addEventListener('keydown', function(event) {
+      if (event.key === 'Escape') {
+        closeModal();
+      }
+    });
     
     // 微信浏览器适配
     function setupWechatCompat() {
@@ -712,7 +781,7 @@
               
               document.getElementById('response').innerHTML = `
                   <div class="response-content">
-                      <img src="${imgUrl}" class="result-cocktail-image" alt="AI 调酒图片" ${isWx ? 'data-long-press-save="true"' : ''} crossorigin="anonymous">
+                      <img src="${imgUrl}" class="result-cocktail-image" alt="AI 调酒图片" ${isWx ? 'data-long-press-save="true"' : ''} crossorigin="anonymous" onclick="openModal('${imgUrl}')">
                       <a href="${imgUrl}" download="专属调酒.png" class="${downloadBtnClass}" target="_blank">${downloadBtnText}</a>
                   </div>
               `;
